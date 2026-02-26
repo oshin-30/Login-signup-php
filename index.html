@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            width: 350px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="submit"] {
+            background: #278d9a;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background: #50adbb;
+        }
+
+        .link {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .link a {
+            text-decoration: none;
+            color: rgb(21, 161, 208);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Register</h2>
+        <form action="register.php" onsubmit="return validate()" method="post">
+            <label>Full Name:</label>
+            <input type="text" name="fname" id="fname" placeholder="Enter your full name"><br><br>
+            <label>Email:</label>
+            <input type="text" name="mail" id="mail" placeholder="Enter your email" onblur="checkEmail()"><br><br>
+            <div id="email-status" style="margin-bottom: 15px; font-size: 14px;"></div>
+            <label>Age:</label>
+            <input type="text" name="age" id="age" placeholder="Enter your age"><br><br>
+            <label>Password:</label>
+            <input type="password" name="pword" id="pword" placeholder="Enter your password"><br><br>
+            <input type="submit" value="Register" id="btn">
+        </form>
+        <div class="link">
+            <a href="login.html">Already have an account? Login</a>
+        </div>
+    </div>
+    <script>
+        function validate() {
+            let a = document.getElementById("fname").value.trim();
+            let b = document.getElementById("mail").value.trim();
+            let c = document.getElementById("age").value.trim();
+            let d = document.getElementById("pword").value.trim();
+            if (a === "" || b === "" || c === "" || d === "") {
+                alert("All fields are required.");
+                return false;
+            }
+            let str = /^[a-zA-Z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/
+            if (!str.test(b)) {
+                alert("Email format is not accurate.");
+                return false;
+            }
+            if (isNaN(c)) {
+                alert("Age must be a number.");
+                return false;
+            }
+            if (d.length < 8 || d.length > 20) {
+                alert("Password must be 8-20 characters.")
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <script>
+        function checkEmail() {
+            let email = document.getElementById("mail").value.trim();
+            let status = document.getElementById("email-status");
+            let regbtn = document.getElementById("btn");
+            if (email === "") {
+                status.innerText = "";
+                regbtn.disabled = false;
+                return;
+            }
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "check_email.php?email=" + encodeURIComponent(email), true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    status.innerText = xhr.responseText;
+                    if (xhr.responseText.includes("Already")) {
+                        status.style.color = "red";
+                        regbtn.disabled = true;
+                    } else {
+                        status.style.color = "green";
+                        regbtn.disabled = false;
+                    }
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+
+</html>
